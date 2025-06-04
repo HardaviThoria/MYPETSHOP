@@ -6,18 +6,47 @@ pipeline {
     tools {
         maven 'Maven 3.6.3'
         jdk 'JDK 11'
+        terraform 'Terraform'
     }
     
     environment {
         // Environment variables for the pipeline
         APP_NAME = 'mypetshop'
         MAVEN_OPTS = '-Dmaven.repo.local=.m2/repository'
+        AWS_CREDENTIALS = credentials('aws-credentials')
     }
     
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+        
+        stage('Terraform Init') {
+            steps {
+                sh '''
+                    cd ${WORKSPACE}
+                    terraform init
+                '''
+            }
+        }
+        
+        stage('Terraform Plan') {
+            steps {
+                sh '''
+                    cd ${WORKSPACE}
+                    terraform plan -out=tfplan
+                '''
+            }
+        }
+        
+        stage('Terraform Apply') {
+            steps {
+                sh '''
+                    cd ${WORKSPACE}
+                    terraform apply -auto-approve tfplan
+                '''
             }
         }
         
