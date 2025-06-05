@@ -12,12 +12,33 @@ pipeline {
         // Environment variables for the pipeline
         APP_NAME = 'mypetshop'
         MAVEN_OPTS = '-Dmaven.repo.local=.m2/repository'
+        AWS_ACCESS_KEY_ID     = credentials('AWS_ACCESS_KEY_ID')
+        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        TF_IN_AUTOMATION      = '1'
     }
     
     stages {
         stage('Checkout') {
             steps {
                 checkout scm
+            }
+        }
+        
+        stage('Terraform Init') {
+            steps {
+                sh 'terraform init'
+            }
+        }
+        
+        stage('Terraform Plan') {
+            steps {
+                sh 'terraform plan -out=tfplan'
+            }
+        }
+        
+        stage('Terraform Apply') {
+            steps {
+                sh 'terraform apply -auto-approve tfplan'
             }
         }
         
@@ -54,33 +75,10 @@ pipeline {
             }
         }
         
-        stage('Deploy to Dev') {
-            when {
-                branch 'develop'
-            }
+        stage('Deploy') {
             steps {
-                // Add deployment steps for dev environment
-                echo 'Deploying to Dev environment'
-            }
-        }
-        
-        stage('Deploy to Staging') {
-            when {
-                branch 'staging'
-            }
-            steps {
-                // Add deployment steps for staging environment
-                echo 'Deploying to Staging environment'
-            }
-        }
-        
-        stage('Deploy to Production') {
-            when {
-                branch 'master'
-            }
-            steps {
-                // Add deployment steps for production environment
-                echo 'Deploying to Production environment'
+                echo 'Deploying the application...'
+                // Add your deployment steps here
             }
         }
     }
