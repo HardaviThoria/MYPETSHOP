@@ -3,10 +3,10 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "mypetshop_bucket" {
-  bucket = "mypetshop-terraform-bucket-hardavi"
+  bucket = var.bucket_name
   
   tags = {
     Name        = "MyPetShop Bucket"
-    Environment = "Dev"
+    Environment = var.environment
   }
 } 
