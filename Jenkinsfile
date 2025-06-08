@@ -1,11 +1,9 @@
-@Library('jenkins-global-pipeline-lib-1.1')_
-
 pipeline {
     agent any
     
     tools {
         maven 'Maven 3.6.3'
-        jdk 'JDK 11'
+        jdk 'JDK'
     }
     
     environment {
